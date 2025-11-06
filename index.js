@@ -1,15 +1,11 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
-const csurf = require('csurf');
 const helmet = require('helmet');
 
 const app = express();
 
-// Middleware
+// Middleware globali
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookieParser());
-app.use(csurf({ cookie: true }));
 
 // Attiva helmet (header di sicurezza base)
 app.use(helmet());
@@ -31,26 +27,7 @@ app.use(
 
 // Rotta principale
 app.get('/', (req, res) => {
-  res.send(`Token CSRF: ${req.csrfToken()}`);
-});
-
-// Rotta GET /login → mostra il form
-app.get('/login', (req, res) => {
-  res.send(`
-    <h1>Pagina di Login</h1>
-    <form action="/login" method="POST">
-      <input type="hidden" name="_csrf" value="${req.csrfToken()}">
-      <label>Username: <input type="text" name="username"></label><br>
-      <label>Password: <input type="password" name="password"></label><br>
-      <button type="submit">Login</button>
-    </form>
-  `);
-});
-
-// Rotta POST /login → riceve i dati dal form
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  res.send(`Login ricevuto! Utente: ${username}, Password: ${password}`);
+  res.send('Ciao Giampaolo, il backend è vivo su Render!');
 });
 
 // API GET
