@@ -1,13 +1,13 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const csurf = require('csurf');
-const helmet = require('helmet');   // <--- aggiunto
+const helmet = require('helmet');
 
 const app = express();
-const port = 3000;
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cookieParser());
 app.use(csurf({ cookie: true }));
 
@@ -18,13 +18,13 @@ app.use(helmet());
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'"], // tutto solo dal tuo dominio
-      scriptSrc: ["'self'"],  // script solo dal tuo dominio
-      styleSrc: ["'self'", "https://fonts.googleapis.com"], // CSS locali + Google Fonts
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],     // font locali + Google Fonts
-      imgSrc: ["'self'", "data:"], // immagini locali + inline base64
-      objectSrc: ["'none'"],       // blocca plugin vecchi
-      upgradeInsecureRequests: [], // forza HTTPS
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     },
   })
 );
@@ -53,7 +53,19 @@ app.post('/login', (req, res) => {
   res.send(`Login ricevuto! Utente: ${username}, Password: ${password}`);
 });
 
-// Avvio server
-app.listen(port, () => {
-  console.log(`Server avviato su http://localhost:${port}`);
+// API GET
+app.get('/api', (req, res) => {
+  res.json({ message: 'Questa è la tua API su Render', autore: 'Giampaolo' });
+});
+
+// API POST
+app.post('/api/data', (req, res) => {
+  const dati = req.body;
+  res.json({ ricevuto: dati });
+});
+
+// Porta gestita da Render
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server avviato su http://localhost:${PORT}`);
 });
