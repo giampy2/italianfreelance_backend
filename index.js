@@ -3,7 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const csurf = require('csurf');
-const rateLimit = require('express-rate-limit'); // ✅ Rate limiting
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
@@ -14,7 +14,23 @@ app.use(cookieParser());
 
 // 🔐 Middleware CSP globale per fallback su tutte le risposte
 app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests");
+  res.setHeader("Content-Security-Policy",
+    "default-src 'self'; " +
+    "script-src 'self'; " +
+    "style-src 'self' https://fonts.googleapis.com; " +
+    "font-src 'self' https://fonts.gstatic.com; " +
+    "img-src 'self' data:; " +
+    "object-src 'none'; " +
+    "base-uri 'self'; " +
+    "form-action 'self'; " +
+    "frame-ancestors 'self'; " +
+    "connect-src 'self'; " +
+    "frame-src 'self'; " +
+    "media-src 'none'; " +
+    "manifest-src 'none'; " +
+    "worker-src 'none'; " +
+    "upgrade-insecure-requests"
+  );
   next();
 });
 
@@ -50,6 +66,11 @@ app.use(
         baseUri: ["'self'"],
         formAction: ["'self'"],
         frameAncestors: ["'self'"],
+        connectSrc: ["'self'"],
+        frameSrc: ["'self'"],
+        mediaSrc: ["'none'"],
+        manifestSrc: ["'none'"],
+        workerSrc: ["'none'"],
         upgradeInsecureRequests: [],
       },
     },
