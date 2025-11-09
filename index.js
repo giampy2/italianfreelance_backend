@@ -3,6 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const csurf = require('csurf');
+const rateLimit = require('express-rate-limit'); // ✅ Rate limiting
 
 const app = express();
 
@@ -55,6 +56,15 @@ app.use(
   })
 );
 
+// ✅ Rate limiting globale
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minuti
+  max: 100, // max 100 richieste per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
+
 // 🔐 Permissions-Policy blindata
 app.use((req, res, next) => {
   res.setHeader(
@@ -88,6 +98,6 @@ app.post('/api/data', (req, res) => {
 // Porta gestita da Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server blindato con CSRF attivo su http://localhost:${PORT}`);
+  console.log(`✅ Server blindato con CSRF e rate limiting su http://localhost:${PORT}`);
 });
 
