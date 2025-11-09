@@ -52,6 +52,24 @@ app.use(helmet({
   },
 }));
 
+// Middleware fallback CSP per rotte non gestite
+app.use((req, res, next) => {
+  if (!res.getHeader('Content-Security-Policy')) {
+    res.setHeader('Content-Security-Policy',
+      "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; connect-src 'self'; frame-src 'self'; media-src 'none'; manifest-src 'none'; worker-src 'none'; upgrade-insecure-requests"
+    );
+  }
+  next();
+});
+
+// Header anti-cache per session management
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
 // Rate limiting globale
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -100,6 +118,18 @@ app.get('/sitemap.xml', (req, res) => {
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://italianfreelance.com/api</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://italianfreelance.com/form</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 </urlset>`
   );
 });
@@ -125,6 +155,7 @@ app.post('/api/data', (req, res) => {
 // Porta
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server blindato con Helmet, CSRF, rate limiting, robots.txt e sitemap.xml su http://localhost:${PORT}`);
+  console.log(`✅ Server blindato con Helmet, CSP fallback, CSRF, rate limiting, robots.txt e sitemap.xml su http://localhost:${PORT}`);
 });
+
 
