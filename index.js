@@ -43,6 +43,15 @@ app.use(
   })
 );
 
+// 🔐 Permissions-Policy blindata
+app.use((req, res, next) => {
+  res.setHeader(
+    "Permissions-Policy",
+    "accelerometer=(), autoplay=(), camera=(), clipboard-write=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+  );
+  next();
+});
+
 // Rotta principale
 app.get('/', (req, res) => {
   res.send('Ciao Giampaolo, il backend è blindato e vivo su Render!');
