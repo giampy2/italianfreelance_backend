@@ -79,8 +79,8 @@ app.use(
 
 // ✅ Rate limiting globale
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minuti
-  max: 100, // max 100 richieste per IP
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -119,6 +119,6 @@ app.post('/api/data', (req, res) => {
 // Porta gestita da Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server blindato con CSRF e rate limiting su http://localhost:${PORT}`);
+  console.log(`✅ Server blindato con CSP, CSRF e rate limiting su http://localhost:${PORT}`);
 });
 
