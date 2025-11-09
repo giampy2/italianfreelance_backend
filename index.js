@@ -11,29 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// CSP fallback manuale (puoi rimuoverlo se usi solo helmet)
-app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy",
-    "default-src 'self'; " +
-    "script-src 'self'; " +
-    "style-src 'self' https://fonts.googleapis.com; " +
-    "font-src 'self' https://fonts.gstatic.com; " +
-    "img-src 'self' data:; " +
-    "object-src 'none'; " +
-    "base-uri 'self'; " +
-    "form-action 'self'; " +
-    "frame-ancestors 'self'; " +
-    "connect-src 'self'; " +
-    "frame-src 'self'; " +
-    "media-src 'none'; " +
-    "manifest-src 'none'; " +
-    "worker-src 'none'; " +
-    "upgrade-insecure-requests"
-  );
-  next();
-});
-
-// CSRF protection
+// Protezione CSRF via cookie blindato
 const csrfProtection = csurf({
   cookie: {
     httpOnly: true,
@@ -43,7 +21,7 @@ const csrfProtection = csurf({
 });
 app.use(csrfProtection);
 
-// Helmet blindato
+// Helmet blindato con CSP avanzata
 app.use(helmet({
   frameguard: { action: "sameorigin" },
   referrerPolicy: { policy: "no-referrer" },
@@ -74,7 +52,7 @@ app.use(helmet({
   },
 }));
 
-// Rate limiting
+// Rate limiting globale
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -83,7 +61,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Permissions-Policy
+// Permissions-Policy blindata
 app.use((req, res, next) => {
   res.setHeader("Permissions-Policy",
     "accelerometer=(), autoplay=(), camera=(), clipboard-write=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
@@ -147,6 +125,6 @@ app.post('/api/data', (req, res) => {
 // Porta
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server blindato con CSP, CSRF, rate limiting, robots.txt e sitemap.xml su http://localhost:${PORT}`);
+  console.log(`✅ Server blindato con Helmet, CSRF, rate limiting, robots.txt e sitemap.xml su http://localhost:${PORT}`);
 });
 
