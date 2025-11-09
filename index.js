@@ -17,8 +17,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Protezione CSRF via cookie
-const csrfProtection = csurf({ cookie: true });
+// Protezione CSRF via cookie blindato
+const csrfProtection = csurf({
+  cookie: {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Strict'
+  }
+});
 app.use(csrfProtection);
 
 // Attiva Helmet con configurazioni avanzate
@@ -60,42 +66,22 @@ app.use((req, res, next) => {
 
 // Rotta principale
 app.get('/', (req, res) => {
-  res.cookie('_csrf', req.csrfToken(), {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'Strict'
-  });
   res.send('Ciao Giampaolo, il backend è blindato e vivo su Render!');
 });
 
 // Rotta per ottenere il token CSRF
 app.get('/form', (req, res) => {
-  res.cookie('_csrf', req.csrfToken(), {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'Strict'
-  });
   res.json({ csrfToken: req.csrfToken() });
 });
 
 // API GET
 app.get('/api', (req, res) => {
-  res.cookie('_csrf', req.csrfToken(), {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'Strict'
-  });
   res.json({ message: 'Questa è la tua API sicura su Render', autore: 'Giampaolo' });
 });
 
 // API POST protetta da CSRF
 app.post('/api/data', (req, res) => {
   const dati = req.body;
-  res.cookie('_csrf', req.csrfToken(), {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'Strict'
-  });
   res.json({ ricevuto: dati, csrfToken: req.csrfToken() });
 });
 
